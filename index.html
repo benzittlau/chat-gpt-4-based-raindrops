@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        background: #2b2b2b;
+        font-family: Arial, sans-serif;
+      }
+      .rain {
+        pointer-events: none;
+        position: absolute;
+        width: 2px;
+        height: 100%;
+        bottom: 100%;
+        background: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0) 50%,
+          rgba(255, 255, 255, 0.8) 80%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        animation: fall linear infinite;
+      }
+
+      @keyframes fall {
+        0% {
+          transform: translateY(0%);
+        }
+        100% {
+          transform: translateY(100%);
+        }
+      }
+
+      .splash {
+        pointer-events: none;
+        position: absolute;
+        width: 20px; /* Increase the size */
+        height: 20px; /* Increase the size */
+        border-radius: 50%;
+        background: transparent; /* Remove the solid background color */
+        border: 1px solid rgba(255, 255, 255, 0.6); /* Add border for the outline */
+        opacity: 0;
+        animation: splash linear infinite;
+      }
+
+      @keyframes splash {
+        0% {
+          transform: scale(0);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="content">
+        <!-- Your blog content goes here -->
+      </div>
+    </div>
+    <div id="raindrops"></div>
+
+    <script>
+      const numberOfRaindrops = 100;
+      const maxBottomOffset = 40;
+      const raindropsContainer = document.getElementById('raindrops');
+
+      function getRandom(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      for (let i = 0; i < numberOfRaindrops; i++) {
+        const raindrop = document.createElement('div');
+        raindrop.classList.add('rain');
+        raindrop.style.left = `${getRandom(0, 100)}%`;
+        raindrop.style.animationDuration = `${getRandom(1, 2)}s`;
+        raindrop.style.animationDelay = `${getRandom(0, 1)}s`;
+        raindrop.style.opacity = `${getRandom(0.1, 0.9)}`;
+
+        const bottomOffset = getRandom(0, maxBottomOffset);
+        const scaleFactor = (100 - bottomOffset) / 100;
+
+        raindrop.style.height = `${scaleFactor * 100}%`; // Randomize the height between 30% and 100%
+        raindrop.style.width = `${scaleFactor * 2}px`; // Scale the width according to the height
+
+        const splash = document.createElement('div');
+        splash.classList.add('splash');
+        splash.style.left = `${parseFloat(raindrop.style.left)}%`;
+        splash.style.bottom = `${bottomOffset}%`;
+        splash.style.animationDuration = raindrop.style.animationDuration;
+        const raindropAnimationDelay = parseFloat(
+          raindrop.style.animationDelay
+        );
+        const raindropAnimationDuration = parseFloat(
+          raindrop.style.animationDuration
+        );
+        splash.style.animationDelay = `${
+          raindropAnimationDelay + raindropAnimationDuration
+        }s`;
+
+        const splashScaleFactor =
+          (maxBottomOffset - parseFloat(splash.style.bottom)) / maxBottomOffset;
+        splash.style.width = `${5 + getRandom(10, 40) * splashScaleFactor}px`; // Scale the width according to the bottom position
+        splash.style.height = splash.style.width; // Set the height equal to the width
+        splash.style.borderWidth = `${splashScaleFactor}px`; // Scale the border width according to the bottom position
+
+        raindropsContainer.appendChild(raindrop);
+        raindropsContainer.appendChild(splash);
+      }
+    </script>
+  </body>
+</html>
