@@ -64,30 +64,11 @@
           opacity: 0;
         }
       }
-
-      #sound-toggle {
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        width: 56px;
-        height: 56px;
-        padding: 0;
-      }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="content">
-        <button id="sound-toggle">
-          <svg viewBox="0 0 24 24" fill="white" width="48" height="48">
-            <path
-              d="M3 9h2l3.5-4v14l-3.5-4H3V9zm13.5 3c0 1.77-1.02 3.29-2.5 4.03v1.97c1.91-1.12 3.5-3.32 3.5-6 0-2.68-1.59-4.88-3.5-6v1.97c1.48.74 2.5 2.26 2.5 4.03zm-2 0c0 1.37-.81 2.54-2 3.09v-6.19c1.19.54 2 1.71 2 3.1z"
-            ></path>
-          </svg>
-        </button>
         <!-- Your blog content goes here -->
       </div>
     </div>
@@ -96,15 +77,15 @@
     <script>
       const numberOfRaindrops = 100;
       const maxBottomOffset = 40;
-      const raindropsContainer = document.getElementById('raindrops');
+      const raindropsContainer = document.getElementById("raindrops");
 
       function getRandom(min, max) {
         return Math.random() * (max - min) + min;
       }
 
       for (let i = 0; i < numberOfRaindrops; i++) {
-        const raindrop = document.createElement('div');
-        raindrop.classList.add('rain');
+        const raindrop = document.createElement("div");
+        raindrop.classList.add("rain");
         raindrop.style.left = `${getRandom(0, 100)}%`;
         raindrop.style.animationDuration = `${getRandom(2, 4)}s`;
         raindrop.style.animationDelay = `${getRandom(0, 2)}s`;
@@ -116,8 +97,8 @@
         raindrop.style.height = `${scaleFactor * 100}%`; // Randomize the height between 30% and 100%
         raindrop.style.width = `${scaleFactor * 2}px`; // Scale the width according to the height
 
-        const splash = document.createElement('div');
-        splash.classList.add('splash');
+        const splash = document.createElement("div");
+        splash.classList.add("splash");
         splash.style.left = `${parseFloat(raindrop.style.left)}%`;
         splash.style.bottom = `${bottomOffset}%`;
         splash.style.animationDuration = raindrop.style.animationDuration;
@@ -140,62 +121,6 @@
         raindropsContainer.appendChild(raindrop);
         raindropsContainer.appendChild(splash);
       }
-
-      function createPinkNoise(context) {
-        const bufferSize = 4096;
-        const pinkNoiseNode = context.createScriptProcessor(bufferSize, 1, 1);
-        let b0, b1, b2, b3, b4, b5, b6;
-        b0 = b1 = b2 = b3 = b4 = b5 = b6 = 0.0;
-
-        pinkNoiseNode.onaudioprocess = function (e) {
-          const output = e.outputBuffer.getChannelData(0);
-          for (let i = 0; i < bufferSize; i++) {
-            const white = Math.random() * 2 - 1;
-            b0 = 0.99886 * b0 + white * 0.0555179;
-            b1 = 0.99332 * b1 + white * 0.0750759;
-            b2 = 0.969 * b2 + white * 0.153852;
-            b3 = 0.8665 * b3 + white * 0.3104856;
-            b4 = 0.55 * b4 + white * 0.5329522;
-            b5 = -0.7616 * b5 - white * 0.016898;
-            output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
-            output[i] *= 0.11; // (roughly) compensate for gain
-            b6 = white * 0.115926;
-          }
-        };
-
-        return pinkNoiseNode;
-      }
-
-      function playRainSound() {
-        const audioContext = new (window.AudioContext ||
-          window.webkitAudioContext)();
-        const pinkNoiseNode = createPinkNoise(audioContext);
-        pinkNoiseNode.connect(audioContext.destination);
-      }
-
-      let audioContext;
-      let pinkNoiseNode;
-      let isPlaying = false;
-
-      function toggleRainSound() {
-        if (!audioContext) {
-          audioContext = new (window.AudioContext ||
-            window.webkitAudioContext)();
-          pinkNoiseNode = createPinkNoise(audioContext);
-        }
-
-        if (isPlaying) {
-          pinkNoiseNode.disconnect(audioContext.destination);
-        } else {
-          pinkNoiseNode.connect(audioContext.destination);
-        }
-
-        isPlaying = !isPlaying;
-      }
-
-      document
-        .getElementById('sound-toggle')
-        .addEventListener('click', toggleRainSound);
     </script>
   </body>
 </html>
